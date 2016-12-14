@@ -1,0 +1,42 @@
+.loadIn {
+  -webkit-animation-name: loadIn;
+          animation-name: loadIn;
+  -webkit-animation-duration: 500ms;
+          animation-duration: 500ms;
+  -webkit-animation-delay: 0ms;
+          animation-delay: 0ms;
+  -webkit-animation-fill-mode: forwards;
+          animation-fill-mode: forwards;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+  -webkit-animation-iteration-count: 1;
+          animation-iteration-count: 1;
+  -webkit-transform-origin: 0 0;
+      -ms-transform-origin: 0 0;
+          transform-origin: 0 0;
+}
+@-webkit-keyframes loadIn {
+  0% {
+    opacity: 0.2;
+  }
+  85% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes loadIn {
+  0% {
+    opacity: 0.2;
+  }
+  85% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.input-icon > i.fa {
+  z-index: 0;
+}

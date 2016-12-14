@@ -28,6 +28,9 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
+npm-debug.log
+node_modules
+
 # Thumbnails
 ._*
 
