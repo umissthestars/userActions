@@ -75,7 +75,7 @@ export const Base = ( Props, context ) =>
 			}
 
 			const title = this.state.isRegister
-				? '申请注册'
+				? '申请账号'
 				: '重置密码'; 
 			const info = { 
 				title: title,

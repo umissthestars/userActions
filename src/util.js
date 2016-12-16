@@ -37,7 +37,8 @@ const removeListener = ( type = 'click', target, func, bubble = false ) => {
 const ajax = ( { type = 'get', url, data = {}, success, error } = {} ) => {
 
     let XMLHttpReq;  
-    
+    type = type.toLowerCase();
+
     try {  
         XMLHttpReq = new ActiveXObject( "Msxml2.XMLHTTP" );//IE高版本创建XMLHTTP  
     }  
@@ -49,11 +50,17 @@ const ajax = ( { type = 'get', url, data = {}, success, error } = {} ) => {
             XMLHttpReq = new XMLHttpRequest();//兼容非IE浏览器，直接创建XMLHTTP对象  
         }  
     }  
+    if( type === 'get' )
+        XMLHttpReq.open( type, url, true );
+    else{
 
-    XMLHttpReq.open( type, url, true );  
+        XMLHttpReq.open( type, url, true );
+        XMLHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    }
+
     XMLHttpReq.onreadystatechange = () => {  
         if ( XMLHttpReq.readyState == 4 ) {  
-            if ( XMLHttpReq.status == 200 ) {  
+            if ( XMLHttpReq.status == 200 ) {
 
                 success && success( XMLHttpReq.responseText, this );
             }else{
@@ -62,7 +69,7 @@ const ajax = ( { type = 'get', url, data = {}, success, error } = {} ) => {
             }
         }  
     }   
-    XMLHttpReq.send( type.toLowerCase() === 'get' ? null : data );
+    XMLHttpReq.send( type === 'get' ? null : serialize( data ) );
 
     return XMLHttpReq;
 }

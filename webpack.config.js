@@ -5,8 +5,7 @@ require("babel-polyfill");
 module.exports = {
   entry: ['babel-polyfill','./src/index.js'],
   output: {
-    filename: 'userActions.js',
-    path: path.join('dist')
+    filename: 'userActions.js'
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
@@ -23,4 +22,11 @@ module.exports = {
         loader: "style-loader!css-loader?modules"
     }]
   },
+  plugins: [
+     new webpack.optimize.UglifyJsPlugin({
+       compress: {
+         warnings: false
+       }
+     })
+   ]
 };

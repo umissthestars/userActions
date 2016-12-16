@@ -43,7 +43,7 @@ export default class Register extends Component {
 		//进入下一步 手机验证
 		this.toNext = () => {
 
-			const el = [ ...this.refs.step0.querySelectorAll( 'input' ) ];
+			const el = [ ...this.refs.step0.querySelectorAll( 'input, textarea' ) ];
 			const param = {};
 			
 			el.map( ( v ) => v.value && ( param[ v.name ] = v.value ) );
@@ -51,7 +51,7 @@ export default class Register extends Component {
 			this.context._event.emit( 'to_next.register', [
 				ReactDOM.findDOMNode( this.refs.step0 ),
 				ReactDOM.findDOMNode( this.refs.step1 )
-			], param );
+			], param, ReactDom.findDOMNode( this.refs.toNext ) );
 		}
 	}
 
@@ -63,35 +63,35 @@ export default class Register extends Component {
 					    <label className="control-label visible-ie8 visible-ie9">姓名</label>
 					    <div className="input-icon">
 					        <i className= "fa fa-user" ></i>
-					        <input className="form-control placeholder-no-fix" type="text" autoComplete="off" placeholder="姓名" name="user_name" />
+					        <input className="form-control placeholder-no-fix" type="text" autoComplete="off" placeholder="姓名" name="UserName" />
 					    </div>
 					</div>
 					<div className="form-group">
 					    <label className="control-label visible-ie8 visible-ie9">密码</label>
 					    <div className="input-icon">
 					        <i className= "fa fa-lock" ></i>
-					        <input className="form-control placeholder-no-fix" type="password" autoComplete="off" placeholder="密码" name="password" />
+					        <input className="form-control placeholder-no-fix" type="password" autoComplete="off" placeholder="密码" name="Password" />
 					    </div>
 					</div>
 				    <div className= "form-group">
 				        <label className="control-label visible-ie8 visible-ie9">邮箱</label>
 				        <div className="input-icon">
-				            <i className= "fa fa-lock" ></i>
+				            <i className= "fa icon-envelope" ></i>
 				            <input
 				            	ref = "mailInput"
 				             	className = "form-control placeholder-no-fix" 
 				             	type = "text" 
 				             	autoComplete = "off" 
 				             	placeholder = "邮箱" 
-				             	name = "email" 
+				             	name = "Email" 
 				            />
 				        </div>
 				    </div>
 				    <div className="form-group">
-	                    <label style = {{ marginBottom: 0 }} >
+	                    <label style = {{ marginBottom: 0, width: '55%' }} >
 	                        <input 
 	                        	ref = "mailCodeInput" 
-	                        	type = "text" 
+	                        	type = "number" 
 	                        	className = "form-control pull-left" 
 	                        	placeholder = "邮箱验证码" 
 	                        	name = "MailVerifCode" 
@@ -104,7 +104,7 @@ export default class Register extends Component {
 	                        	className = "btn btn-primary"
 	                        	style= {{ cursor: 'pointer', verticalAlign: 'middle' }}
 	                       	>
-	                       		获取验证码
+	                       		获取邮箱验证码
 	                       	</a>
 	                    </div>
 				    </div>
@@ -112,28 +112,26 @@ export default class Register extends Component {
 					    <div className= { "form-group " + hide }>
 					        <label className="control-label visible-ie8 visible-ie9">RTX号</label>
 					        <div className="input-icon">
-					            <i className= "fa fa-lock" ></i>
-					            <input className="form-control placeholder-no-fix" type="text" autoComplete="off" placeholder="RTX号" name="rtx_num" />
+					            <i className= "fa icon-bubble" ></i>
+					            <input className="form-control placeholder-no-fix" type="number" autoComplete="off" placeholder="RTX号" name="RtxNum" />
 					        </div>
 					    </div>
-					    
-					    <div className= { "form-group " + hide }>
-					        <label className="control-label visible-ie8 visible-ie9">开通接口</label>
-					        <div className="input-icon">
-					            <i className= "fa fa-lock" ></i>
-					            <input className="form-control placeholder-no-fix" type="text" autoComplete="off" placeholder="开通接口" name="api_names" />
-					        </div>
-					    </div>
+
 					    <div className= { "form-group " + hide }>
 					        <label className="control-label visible-ie8 visible-ie9">备注</label>
 					        <div className="input-icon">
-					            <i className= "fa fa-lock" ></i>
-					            <input className="form-control placeholder-no-fix" type="text" autoComplete="off" placeholder="备注" name="remark" />
+					            <i className= "fa icon-tag" ></i>
+					            <textarea 
+					            	className="form-control"
+					            	placeholder="备注" 
+					            	name="Remark" 
+					            ></textarea>
 					        </div>
 					    </div>
 					</div>
 					<div className="form-group row">
 						<a 
+							ref = "toNext"
 							className="btn btn-primary" 
 							onClick = { this.toNext } 
 							style = {{ float: 'right', marginRight: '15px' }} 

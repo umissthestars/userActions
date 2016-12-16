@@ -9,17 +9,17 @@ export default class Next extends Component {
 		_event: React.PropTypes.object
 	}
 
-	constructor(props) {
+	constructor( props ) {
 		
-		super(props);
+		super( props );
 
 		//发送手机验证码
 		this.sendPhoneCode = code => this.context._event.emit( 'send_phone.register', code, ReactDOM.findDOMNode( this.refs.getPhoneCode ) );
 
 		//申请注册
 		this.toRegister = ( phone, code ) => this.context._event.emit( 'submit.register', {
-			phone: this.refs.phoneInput.value,
-			code: this.refs.phoneCodeInput.value
+			phoneNumber: this.refs.phoneInput.value,
+			msgVerifCode: this.refs.phoneCodeInput.value
 		} );
 	}
 
@@ -34,17 +34,17 @@ export default class Next extends Component {
 			            <input 
 			            	ref = "phoneInput"
 			           		className="form-control placeholder-no-fix" 
-			           		type="" autoComplete="off" 
+			           		type="number" autoComplete="off" 
 			           		placeholder="手机号码" 
 			           		name="phone_number" 
 			           	/>
 			        </div>
 			    </div>
 			    <div className="form-group">
-                    <label style = {{ marginBottom: 0 }} >
+                    <label style = {{ marginBottom: 0, width: '55%' }} >
                         <input 
                         	ref = "phoneCodeInput"
-                        	type="text" 
+                        	type="number" 
                         	className="form-control pull-left" 
                         	placeholder="手机验证码" 
                         	name=""
@@ -57,7 +57,7 @@ export default class Next extends Component {
                         	className = "btn btn-primary" 
                         	style= {{ cursor: 'pointer', verticalAlign: 'middle' }}
                         >
-                        	获取验证码 
+                        	获取手机验证码 
                         </a>
                     </div>
 			    </div>

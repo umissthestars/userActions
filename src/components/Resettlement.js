@@ -14,16 +14,17 @@ export default class Resettlement extends Component {
 		super( props );
 
 		//发送重置邮件
-		this.sendMailCode = ( account, send ) => this.context._event.emit( 'send_mail.resettlement', {
+		this.sendMailCode = ( account, address ) => this.context._event.emit( 'send_mail.resettlement', {
 			account: account,
-			send: send
+			address: address
 		}, ReactDOM.findDOMNode( this.refs.getCode ) );
 
 		//申请重置
-		this.toReset = ( account, send, code ) => this.context._event.emit( 'to_reset.resettlement', {
-			account: account,
-			send: send,
-			code: code
+		this.toReset = () => this.context._event.emit( 'to_reset.resettlement', {
+			account: this.refs.account.value, 
+			verifType: this.refs.sendInput.value,
+			verifCode: this.refs.codeInput.value,
+			pwd: this.refs.passwordInput.value
 		} );
 	}
 
@@ -37,7 +38,6 @@ export default class Resettlement extends Component {
 				        <i className= "fa fa-user" ></i>
 				        <input 
 				        	ref = "account"
-				        	defaultValue = { this.props.account }
 				        	className = "form-control placeholder-no-fix" 
 				        	type = "text" 
 				        	autoComplete = "off" 
@@ -49,14 +49,14 @@ export default class Resettlement extends Component {
 			    <div className="form-group">
 			        <label className="control-label visible-ie8 visible-ie9">邮箱/手机号</label>
 			        <div className="input-icon">
-			            <i className= "fa fa-user" ></i>
+			            <i className= "fa icon-envelope" ></i>
 			            <input 
 			            	ref = "sendInput"
 			            	className = "form-control placeholder-no-fix" 
 			            	type = "text" 
 			            	autoComplete = "off" 
 			            	placeholder = "邮箱/手机号" 
-			            	name = "" 
+			            	name = "verifType" 
 			            />
 			        </div>
 			    </div>
@@ -65,10 +65,10 @@ export default class Resettlement extends Component {
                     <label style = {{ marginBottom: 0 }} >
                         <input 
                         	ref = "codeInput" 
-                        	type = "text" 
+                        	type = "number" 
                         	className = "form-control pull-left" 
                         	placeholder = "验证码" 
-                        	name = "" 
+                        	name = "verifCode" 
                         />
                     </label>
                     <div className="pull-right">
@@ -83,9 +83,24 @@ export default class Resettlement extends Component {
                     </div>
 			    </div>
 
+			    <div className="form-group">
+			        <label className="control-label visible-ie8 visible-ie9">密码</label>
+			        <div className="input-icon">
+			            <i className= "fa fa-lock" ></i>
+			            <input
+			            	ref = "passwordInput"
+			            	className="form-control placeholder-no-fix" 
+			            	type="password" 
+			            	autoComplete="off" 
+			            	placeholder="密码" 
+			            	name="pwd" 
+			            />
+			        </div>
+			    </div>
+
 			    <div className="form-group row">
 			    	<a
-			    		onClick = { () => this.toReset( this.refs.account.value, this.refs.sendInput.value, this.refs.codeInput.value ) }
+			    		onClick = { this.toReset }
 			    		className = "btn btn-primary" 
 			    		ref = "submit_resettlement" 
 			    		style = {{ float: 'right', marginRight: '15px' }} 
