@@ -14,18 +14,42 @@ export default class Resettlement extends Component {
 		super( props );
 
 		//发送重置邮件
-		this.sendMailCode = ( account, address ) => this.context._event.emit( 'send_mail.resettlement', {
-			account: account,
-			address: address
-		}, ReactDOM.findDOMNode( this.refs.getCode ) );
+		let isSendMailCode = false;
+		this.sendMailCode = async ( account, address ) => {
+
+			if( isSendMailCode )
+				return void 0;
+			await new Promise( resolve => {
+
+				isSendMailCode = true;
+				this.context._event.emit( 'send_mail.resettlement', resolve, {
+					account: account,
+					address: address
+				}, ReactDOM.findDOMNode( this.refs.getCode ) );
+			} );
+
+			isSendMailCode = false;
+		}
 
 		//申请重置
-		this.toReset = () => this.context._event.emit( 'to_reset.resettlement', {
-			account: this.refs.account.value, 
-			verifType: this.refs.sendInput.value,
-			verifCode: this.refs.codeInput.value,
-			pwd: this.refs.passwordInput.value
-		} );
+		let isToReset = false;
+		this.toReset = async () => {
+
+			if( isToReset )
+				return void 0;
+			await new Promise( resolve => {
+
+				isToReset = true;
+				this.context._event.emit( 'to_reset.resettlement', resolve, {
+					account: this.refs.account.value, 
+					verifType: this.refs.sendInput.value,
+					verifCode: this.refs.codeInput.value,
+					pwd: this.refs.passwordInput.value
+				} );
+			} );
+
+			isToReset = false;
+		}
 	}
 
 	render() {

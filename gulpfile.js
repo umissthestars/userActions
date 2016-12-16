@@ -18,9 +18,12 @@ gulp.task('less', function (type){
     .pipe(gulp.dest('src/style/'))
 });
 
+var webpackConfig = require('./webpack.config.js');
+webpackConfig.output.path = '';
+
 gulp.task('webpack', function() {
   return gulp.src('src/index.js')
-    .pipe(webpack( require('./webpack.config.js') ))
+    .pipe( webpack( webpackConfig ) )
     .pipe(gulp.dest('dist/'));
 });
 

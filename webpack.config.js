@@ -5,7 +5,8 @@ require("babel-polyfill");
 module.exports = {
   entry: ['babel-polyfill','./src/index.js'],
   output: {
-    filename: 'userActions.js'
+    filename: 'userActions.js',
+    path: './dist'
   },
   resolve: {
     extensions: ['', '.js', '.jsx']

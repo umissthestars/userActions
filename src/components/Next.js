@@ -17,10 +17,21 @@ export default class Next extends Component {
 		this.sendPhoneCode = code => this.context._event.emit( 'send_phone.register', code, ReactDOM.findDOMNode( this.refs.getPhoneCode ) );
 
 		//申请注册
-		this.toRegister = ( phone, code ) => this.context._event.emit( 'submit.register', {
-			phoneNumber: this.refs.phoneInput.value,
-			msgVerifCode: this.refs.phoneCodeInput.value
-		} );
+		let isToRegister = false;
+		this.toRegister = async ( phone, code ) => {
+
+			if( isToRegister )
+				return void 0;
+			await new Promise( resolve => {
+
+				isToRegister = true;
+				this.context._event.emit( 'submit.register', resolve, {
+					phoneNumber: this.refs.phoneInput.value,
+					msgVerifCode: this.refs.phoneCodeInput.value
+				} );
+			} );
+			isToRegister = false;
+		}
 	}
 
 	render (){
@@ -63,7 +74,7 @@ export default class Next extends Component {
 			    </div>
 			    <div className="form-group row">
 			    	<a 
-			    		onClick = { () => this.toRegister( this.refs.phoneInput.value, this.refs.phoneCodeInput.value ) }
+			    		onClick = { this.toRegister }
 			    		className = "btn btn-primary" 
 			    		ref = "to_register" 
 			    		style = {{ float: 'right', marginRight: '15px' }} 

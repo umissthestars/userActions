@@ -138,9 +138,9 @@ const serialize = ( data ) => {
     for( let i in data )
         if( data.hasOwnProperty( i ) )
             if( toString.call( data[ i ] ) === '[object Array]' )
-                data[ i ].map( v => param += '&' + i + '=' + data[ i ][ v ].trim() );
+                data[ i ].map( v => data[ i ][ v ].trim() && ( param += '&' + i + '=' + data[ i ][ v ].trim() ) );
             else
-                param += '&' + i + '=' + data[ i ].trim();  
+                data[ i ].trim() && ( param += '&' + i + '=' + data[ i ].trim() );  
 
     return param.substr( 1 );
 }

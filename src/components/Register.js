@@ -31,6 +31,22 @@ export default class Register extends Component {
 			} );
 		} );
 
+		//信息提示  jq.hover
+		const reminder = ReactDOM.findDOMNode( this.refs.reminder );
+		reminder.setAttribute( 
+			'data-content', 
+			'<p>1.想要申请的接口权限有哪些？</p><p>2.申请账号的原因</p>' );
+
+		$( reminder ).popover({
+			html: true
+		});
+		$( reminder ).hover( function () {
+
+		    $( this ).popover( 'show' );
+		}, function () {
+
+		    $( this ).popover( 'hide' );
+		} );
 	}
 
 	constructor( props ) {
@@ -41,17 +57,24 @@ export default class Register extends Component {
 		this.sendMailCode = ( code ) => this.context._event.emit( 'send_mail.register', code, ReactDOM.findDOMNode( this.refs.getMailCode ) );
 
 		//进入下一步 手机验证
-		this.toNext = () => {
+		let isToNext = false;
+		this.toNext = async () => {
 
-			const el = [ ...this.refs.step0.querySelectorAll( 'input, textarea' ) ];
-			const param = {};
-			
-			el.map( ( v ) => v.value && ( param[ v.name ] = v.value ) );
+			if( isToNext )
+				return void 0;
+			await new Promise( resolve => {
+				isToNext = true;
+				const el = [ ...this.refs.step0.querySelectorAll( 'input, textarea' ) ];
+				const param = {};
+				
+				el.map( ( v ) => v.value && ( param[ v.name ] = v.value ) );
 
-			this.context._event.emit( 'to_next.register', [
-				ReactDOM.findDOMNode( this.refs.step0 ),
-				ReactDOM.findDOMNode( this.refs.step1 )
-			], param, ReactDom.findDOMNode( this.refs.toNext ) );
+				this.context._event.emit( 'to_next.register', resolve, [
+					ReactDOM.findDOMNode( this.refs.step0 ),
+					ReactDOM.findDOMNode( this.refs.step1 )
+				], param );
+			} );
+			isToNext = false;
 		}
 	}
 
@@ -113,7 +136,7 @@ export default class Register extends Component {
 					        <label className="control-label visible-ie8 visible-ie9">RTX号</label>
 					        <div className="input-icon">
 					            <i className= "fa icon-bubble" ></i>
-					            <input className="form-control placeholder-no-fix" type="number" autoComplete="off" placeholder="RTX号" name="RtxNum" />
+					            <input className="form-control placeholder-no-fix" type="text" autoComplete="off" placeholder="RTX号" name="RtxNum" />
 					        </div>
 					    </div>
 
@@ -126,6 +149,11 @@ export default class Register extends Component {
 					            	placeholder="备注" 
 					            	name="Remark" 
 					            ></textarea>
+					            <i 	
+					            	ref = "reminder"
+					            	className= "fa icon-question" 
+					            	style= {{ right: 10, top: 0 }}
+					            ></i>
 					        </div>
 					    </div>
 					</div>

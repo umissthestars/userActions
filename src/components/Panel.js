@@ -27,7 +27,7 @@ export const Base = ( Props, context ) =>
 
 		componentDidMount() {
 
-			;[].map.call( this.refs.content.querySelectorAll( 'input' ), ( v, i, a ) => {
+			;[].map.call( this.refs.content.querySelectorAll( 'input, textarea' ), ( v, i, a ) => {
 
 				addListener( 'mouseenter', v, ( event ) => {
 

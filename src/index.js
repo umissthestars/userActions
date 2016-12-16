@@ -39,8 +39,8 @@ const swiper = new Swiper('.swiper-container', {
     onInit: ( swiper ) => {
 
         //因value的填充取决于其他js，相对组件为异步，尝试从cookie取值
-    	let account = el_main.querySelector( 'input[name="account"]' ).value 
-    		|| ( atob( getCookie( 'resu' ) ) && atob( getCookie( 'resu' ) ).split( ',' )[ 0 ] );
+        let account = el_main.querySelector( 'input[name="account"]' ).value 
+            || ( atob( getCookie( 'resu' ) ) && atob( getCookie( 'resu' ) ).split( ',' )[ 0 ] );
 
         // 为 原登录兼容 
         // 1，在输入框区域的拖拽 取消对swiper滚动的影响
@@ -72,7 +72,7 @@ const swiper = new Swiper('.swiper-container', {
         * @generator 注册 重置 
         * @description 传递isRegister作为渲染区分标志
         * @return {ReactClass} 父类
-        **/	
+        **/ 
         const factory = function* (){
 
             for( let i = 0; true; i++ )
@@ -103,8 +103,8 @@ const swiper = new Swiper('.swiper-container', {
         const Reg = product.next().value;
         const Res = product.next().value;
 
-    	render( <Reg />, el_register );
-   		render( <Res />, el_resettlement );
+        render( <Reg />, el_register );
+        render( <Res />, el_resettlement );
     }
 });
 
@@ -128,6 +128,7 @@ _event.on( 'send_mail.register', ( code, el ) => {
         $.tips( 'warning.close', { title: '失败', body: '邮箱地址不正确！' }, 3 );
     }else{
 
+        codeTrigger( el, '获取邮箱验证码' );
         ajax( {
             type: 'post',
             url: webRoot + 'Register/MailVerifCode?' + '_=' + +new Date(),
@@ -137,7 +138,6 @@ _event.on( 'send_mail.register', ( code, el ) => {
                 const data = JSON.parse( result );
                 if( data.Status == 0 ){
 
-                    codeTrigger( el, '获取邮箱验证码' );
                     $.tips( 'success.close', { title: '成功', body: data.Message }, 3 );
 
                 }else{
@@ -157,53 +157,49 @@ _event.on( 'send_mail.register', ( code, el ) => {
 //保存邮箱地址
 let mailAddress = '';
 //申请注册 下一步
-_event.on( 'to_next.register', ( domArr, param, el ) => {
+_event.on( 'to_next.register', ( resolve, domArr, param, el ) => {
 
     const params = serialize( param );
 
     if( params.split( '&' ).length !== 6 ){
 
         $.tips( 'warning.close', { title: '失败', body: '不能为空！' }, 3 );
+        resolve( 'fail => 下一步 => 本地验证' );
         return void 0;
     }else{
 
-        // !async function holdTrigger ( el ){
-        //     awit () => {
+        ajax( {
+            type: 'post',
+            url: webRoot + 'Register/VerifyRegInfo?' + '_=' + +new Date(),
+            data: param,
+            success: ( result ) => {
 
-                ajax( {
-                    type: 'post',
-                    url: webRoot + 'Register/VerifyRegInfo?' + '_=' + +new Date(),
-                    data: param,
-                    success: ( result ) => {
+                const data = JSON.parse( result );
+                if( data.Status == 0 ){
 
-                        const data = JSON.parse( result );
-                        if( data.Status == 0 ){
+                    mailAddress = param.Email;
+                    $.tips( 'success.close', { title: '成功', body: '请填写手机验证码完成申请！' }, 3 );
+                    domArr[ 0 ].style.display = 'none';
+                    domArr[ 1 ].style.display = 'block';
+                }else{
 
-                            mailAddress = param.Email;
-                            $.tips( 'success.close', { title: '成功', body: '请填写手机验证码完成申请！' }, 3 );
-                            domArr[ 0 ].style.display = 'none';
-                            domArr[ 1 ].style.display = 'block';
+                    $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
+                }
+                resolve( 'done' );
+            },
+            error: ( error ) => {
 
-                        }else{
+                $.tips( 'warning.close', { title: '失败', body: error }, 3 );
+                resolve( 'fail => 下一步 => 连接错误' );
+            }
 
-                            $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
-                        }
-
-                    },
-                    error: ( error ) => {
-
-                        $.tips( 'warning.close', { title: '失败', body: error }, 3 );
-                    }
-
-                } );
-        //     }
-        // }( el );
+        } );
     }
 } );
 
 //发送手机验证码
 _event.on( 'send_phone.register', ( code, el ) => {
-console.log(mailAddress,code.trim())
+
     if( el.hasAttribute('disabled') ){
 
         return void 0;
@@ -213,6 +209,7 @@ console.log(mailAddress,code.trim())
         return void 0;
     } else {
 
+        codeTrigger( el, '获取手机验证码' );
         ajax( {
             type: 'post',
             url: webRoot + 'Register/MsgVerifCode?' + '_=' + +new Date(),
@@ -225,7 +222,6 @@ console.log(mailAddress,code.trim())
                 const data = JSON.parse( result );
                 if( data.Status == 0 ){
 
-                    codeTrigger( el );
                     $.tips( 'success.close', { title: '成功', body: '验证码已发送！' }, 3 );
 
                 }else{
@@ -243,12 +239,13 @@ console.log(mailAddress,code.trim())
 } );
 
 //申请注册
-_event.on( 'submit.register', ( param ) => {
+_event.on( 'submit.register', ( resolve, param ) => {
 
     const params = serialize( param );
     if( params.split( '&' ).length !== 2 ){
 
         $.tips( 'warning.close', { title: '失败', body: '不能为空！' }, 3 );
+        resolve( 'fail => 申请注册 => 本地验证' );
         return void 0;
     }else{
 
@@ -269,10 +266,12 @@ _event.on( 'submit.register', ( param ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
+                resolve( 'done' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
+                resolve( 'fail => 申请注册 => 连接错误' );
             }
 
         } );
@@ -314,6 +313,8 @@ _event.on( 'send_mail.resettlement', ( param, el ) => {
             }
         }
 
+
+        codeTrigger( el );
         ajax( {
             type: 'post',
             url: url,
@@ -323,7 +324,6 @@ _event.on( 'send_mail.resettlement', ( param, el ) => {
                 const data = JSON.parse( result );
                 if( data.Status == 0 ){
 
-                    codeTrigger( el );
                     $.tips( 'success.close', { title: '成功', body: '验证码已发送！' }, 3 );
 
                 }else{
@@ -341,12 +341,13 @@ _event.on( 'send_mail.resettlement', ( param, el ) => {
 } );
 
 //确认重置
-_event.on( 'to_reset.resettlement', ( param ) => {
+_event.on( 'to_reset.resettlement', ( resolve, param ) => {
     
     const params = serialize( param );
     if( params.split( '&' ).length !== 4 ){
 
         $.tips( 'warning.close', { title: '失败', body: '不能为空！' }, 3 );
+        resolve( 'fail => 确认重置 => 本地验证' );
         return void 0;
     }else{
 
@@ -365,10 +366,12 @@ _event.on( 'to_reset.resettlement', ( param ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
+                resolve( 'done => 确认重置 => 连接成功' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
+                resolve( 'done => 确认重置 => 连接错误' );
             }
 
         } );

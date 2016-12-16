@@ -44,3 +44,10 @@
 #to_resettlement {
   color: #17c;
 }
+#panel-register .popover-content {
+  width: 200px;
+}
+#panel-register .popover-content p {
+  color: #666;
+  margin: 0;
+}
