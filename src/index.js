@@ -115,17 +115,22 @@ const swiper = new Swiper('.swiper-container', {
 * @param {Unknow} from emit
 */
 //发送邮箱验证码
-_event.on( 'send_mail.register', ( code, el ) => {
-    
-    if( el.hasAttribute('disabled') ){
+_event.on( 'send_mail.register', ( resolve, code, el ) => {
 
-        return void 0;
+    if( el.hasAttribute( 'disabled' ) ){
+
+        return resolve( 'fail => 本地验证' );
     }else if( !code ){
 
         $.tips( 'warning.close', { title: '失败', body: '邮箱不能为空！' }, 3 );
-    }else if( !code.match( /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/gi ) ){
+        return resolve( 'fail => 本地验证' );
+    }else if( !code.match( /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/gi )
+        || ( !code.match( '@eastmoney.com' ) 
+            && !code.match( '@1234567.com.cn' ) 
+            && !code.match( '@winsigns.com.cn' ) ) ){
 
         $.tips( 'warning.close', { title: '失败', body: '邮箱地址不正确！' }, 3 );
+        return resolve( 'fail => 本地验证' );
     }else{
 
         codeTrigger( el, '获取邮箱验证码' );
@@ -144,10 +149,12 @@ _event.on( 'send_mail.register', ( code, el ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
+                return resolve( 'done' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
+                return resolve( 'fail => 连接错误' );
             }
 
         } );
@@ -160,12 +167,14 @@ let mailAddress = '';
 _event.on( 'to_next.register', ( resolve, domArr, param, el ) => {
 
     const params = serialize( param );
-
     if( params.split( '&' ).length !== 6 ){
 
         $.tips( 'warning.close', { title: '失败', body: '不能为空！' }, 3 );
-        resolve( 'fail => 下一步 => 本地验证' );
-        return void 0;
+        return resolve( 'fail => 下一步 => 本地验证' );
+    }else if( !param[ 'Password' ].match( /(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{6,30}/gi ) ) {
+
+        $.tips( 'warning.close', { title: '失败', body: '密码中必须包含字母、数字、特称字符，至少8个字符，最多30个字符。' }, 3 );
+        return resolve( 'fail => 下一步 => 本地验证' );
     }else{
 
         ajax( {
@@ -185,12 +194,12 @@ _event.on( 'to_next.register', ( resolve, domArr, param, el ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
-                resolve( 'done' );
+                return resolve( 'done' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
-                resolve( 'fail => 下一步 => 连接错误' );
+                return resolve( 'fail => 下一步 => 连接错误' );
             }
 
         } );
@@ -198,15 +207,15 @@ _event.on( 'to_next.register', ( resolve, domArr, param, el ) => {
 } );
 
 //发送手机验证码
-_event.on( 'send_phone.register', ( code, el ) => {
+_event.on( 'send_phone.register', ( resolve, code, el ) => {
+    
+    if( el.hasAttribute( 'disabled' ) ){
 
-    if( el.hasAttribute('disabled') ){
-
-        return void 0;
+        return resolve( 'fail => 本地验证' );
     }else if( !code ){
 
         $.tips( 'warning.close', { title: '失败', body: '手机号码不能为空！' }, 3 );
-        return void 0;
+        return resolve( 'fail => 本地验证' );
     } else {
 
         codeTrigger( el, '获取手机验证码' );
@@ -228,10 +237,12 @@ _event.on( 'send_phone.register', ( code, el ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
+                return resolve( 'fail => 连接错误' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
+                return resolve( 'fail => 连接错误' );
             }
 
         } );
@@ -239,14 +250,13 @@ _event.on( 'send_phone.register', ( code, el ) => {
 } );
 
 //申请注册
-_event.on( 'submit.register', ( resolve, param ) => {
+_event.on( 'submit.register', ( resolve, param, el ) => {
 
     const params = serialize( param );
     if( params.split( '&' ).length !== 2 ){
 
         $.tips( 'warning.close', { title: '失败', body: '不能为空！' }, 3 );
-        resolve( 'fail => 申请注册 => 本地验证' );
-        return void 0;
+        return resolve( 'fail => 申请注册 => 本地验证' );
     }else{
 
         param.mailAddress = mailAddress;
@@ -266,12 +276,12 @@ _event.on( 'submit.register', ( resolve, param ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
-                resolve( 'done' );
+                return resolve( 'done' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
-                resolve( 'fail => 申请注册 => 连接错误' );
+                return resolve( 'fail => 申请注册 => 连接错误' );
             }
 
         } );
@@ -279,19 +289,20 @@ _event.on( 'submit.register', ( resolve, param ) => {
 } );
 
 //发送重置邮件
-_event.on( 'send_mail.resettlement', ( param, el ) => {
-    
-    if( el.hasAttribute('disabled') ){
+_event.on( 'send_mail.resettlement', ( resolve, param, el ) => {
 
-        return void 0;
+    el.className += ' disabled';
+    if( el.hasAttribute( 'disabled' ) ){
+
+        return resolve( 'fail => 本地验证' );
     }else if( !param[ 'account' ] || !param[ 'address' ] ){
 
         $.tips( 'warning.close', { title: '失败', body: '邮箱/手机号码不能为空！' }, 3 );
-        return void 0;
+        return resolve( 'fail => 本地验证' );
     } else if( !param[ 'address' ].search( '@' ) && param[ 'address' ].march( /\d{7,}/gi ) ) {
 
         $.tips( 'warning.close', { title: '失败', body: '邮箱/手机号码格式不正确！' }, 3 );
-        return void 0;
+        return resolve( 'fail => 本地验证' );
     } else {
 
         let url = '';
@@ -330,10 +341,12 @@ _event.on( 'send_mail.resettlement', ( param, el ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
+                resolve( 'done' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
+                resolve( 'fail => 连接错误' );
             }
 
         } );
@@ -341,14 +354,14 @@ _event.on( 'send_mail.resettlement', ( param, el ) => {
 } );
 
 //确认重置
-_event.on( 'to_reset.resettlement', ( resolve, param ) => {
+_event.on( 'to_reset.resettlement', ( resolve, param, el ) => {
     
     const params = serialize( param );
+    el.className += ' disabled';
     if( params.split( '&' ).length !== 4 ){
 
         $.tips( 'warning.close', { title: '失败', body: '不能为空！' }, 3 );
-        resolve( 'fail => 确认重置 => 本地验证' );
-        return void 0;
+        return resolve( 'fail => 确认重置 => 本地验证' );
     }else{
 
         ajax( {
@@ -366,12 +379,12 @@ _event.on( 'to_reset.resettlement', ( resolve, param ) => {
 
                     $.tips( 'warning.close', { title: '失败', body: data.Message }, 3 );
                 }
-                resolve( 'done => 确认重置 => 连接成功' );
+                return resolve( 'done => 确认重置 => 连接成功' );
             },
             error: ( error ) => {
 
                 $.tips( 'warning.close', { title: '失败', body: error }, 3 );
-                resolve( 'done => 确认重置 => 连接错误' );
+                return resolve( 'done => 确认重置 => 连接错误' );
             }
 
         } );

@@ -6,7 +6,7 @@ module.exports = {
   entry: ['babel-polyfill','./src/index.js'],
   output: {
     filename: 'userActions.js',
-    path: './dist'
+    path: '../../Scripts/'
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
@@ -29,5 +29,5 @@ module.exports = {
          warnings: false
        }
      })
-   ]
+  ]
 };

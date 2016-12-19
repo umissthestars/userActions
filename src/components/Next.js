@@ -9,29 +9,43 @@ export default class Next extends Component {
 		_event: React.PropTypes.object
 	}
 
-	constructor( props ) {
+	componentDidMount() {
 		
-		super( props );
-
 		//发送手机验证码
-		this.sendPhoneCode = code => this.context._event.emit( 'send_phone.register', code, ReactDOM.findDOMNode( this.refs.getPhoneCode ) );
+		const $trigger_phoneCode = ReactDOM.findDOMNode( this.refs.getPhoneCode );
+		this.sendPhoneCode = async ( code ) => {
+
+			if( $trigger_phoneCode.className.match( 'disabled' ) )
+				$trigger_phoneCode.setAttribute( 'disabled', '' );
+			await new Promise( resolve => {
+
+				$trigger_phoneCode.className += ' disabled';
+				this.context._event.emit( 'send_phone.register', resolve, code, ReactDOM.findDOMNode( this.refs.getPhoneCode ) );
+			} );
+			$trigger_phoneCode.className = $trigger_phoneCode.className.replace( /disabled/gi, '' );
+		}
 
 		//申请注册
-		let isToRegister = false;
+		const $trigger_toRegister = ReactDOM.findDOMNode( this.refs.toRegister );
 		this.toRegister = async ( phone, code ) => {
 
-			if( isToRegister )
+			if( $trigger_toRegister.className.match( 'disabled' ) )
 				return void 0;
 			await new Promise( resolve => {
 
-				isToRegister = true;
+				$trigger_toRegister.className += ' disabled';
 				this.context._event.emit( 'submit.register', resolve, {
 					phoneNumber: this.refs.phoneInput.value,
 					msgVerifCode: this.refs.phoneCodeInput.value
-				} );
+				}, $trigger_toRegister );
 			} );
-			isToRegister = false;
+			$trigger_toRegister.className = $trigger_toRegister.className.replace( /disabled/gi, '' );
 		}
+	}
+
+	constructor( props ) {
+		
+		super( props );
 	}
 
 	render (){
@@ -65,7 +79,7 @@ export default class Next extends Component {
                         <a 
                         	ref = "getPhoneCode"
                         	onClick = { () => this.sendPhoneCode( this.refs.phoneInput.value ) }
-                        	className = "btn btn-primary" 
+                        	className = "btn btn-primary"
                         	style= {{ cursor: 'pointer', verticalAlign: 'middle' }}
                         >
                         	获取手机验证码 
@@ -74,9 +88,9 @@ export default class Next extends Component {
 			    </div>
 			    <div className="form-group row">
 			    	<a 
-			    		onClick = { this.toRegister }
+			    		onClick = { () => this.toRegister() }
 			    		className = "btn btn-primary" 
-			    		ref = "to_register" 
+			    		ref = "toRegister" 
 			    		style = {{ float: 'right', marginRight: '15px' }} 
 			    	>
 			    		申请注册 

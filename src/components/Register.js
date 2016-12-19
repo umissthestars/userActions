@@ -47,23 +47,30 @@ export default class Register extends Component {
 
 		    $( this ).popover( 'hide' );
 		} );
-	}
-
-	constructor( props ) {
-		
-		super( props );
 
 		//发送邮箱验证码
-		this.sendMailCode = ( code ) => this.context._event.emit( 'send_mail.register', code, ReactDOM.findDOMNode( this.refs.getMailCode ) );
+		const $trigger_mailCode = ReactDOM.findDOMNode( this.refs.getMailCode );
+		this.sendMailCode = async () => {
 
-		//进入下一步 手机验证
-		let isToNext = false;
-		this.toNext = async () => {
-
-			if( isToNext )
+			if( $trigger_mailCode.className.match( 'disabled' ) )
 				return void 0;
 			await new Promise( resolve => {
-				isToNext = true;
+				
+				$trigger_mailCode.className += ' disabled';
+				this.context._event.emit( 'send_mail.register', resolve, this.refs.mailInput.value, $trigger_mailCode );
+			} );
+			$trigger_mailCode.className = $trigger_mailCode.className.replace( /disabled/gi, '' );
+		}
+
+		//进入下一步 手机验证
+		const $trigger_toNext = ReactDOM.findDOMNode( this.refs.toNext );
+		this.toNext = async () => {
+
+			if( $trigger_toNext.className.match( 'disabled' ) )
+				return void 0;
+			await new Promise( resolve => {
+				
+				$trigger_toNext.className += ' disabled';
 				const el = [ ...this.refs.step0.querySelectorAll( 'input, textarea' ) ];
 				const param = {};
 				
@@ -72,10 +79,15 @@ export default class Register extends Component {
 				this.context._event.emit( 'to_next.register', resolve, [
 					ReactDOM.findDOMNode( this.refs.step0 ),
 					ReactDOM.findDOMNode( this.refs.step1 )
-				], param );
+				], param, $trigger_toNext );
 			} );
-			isToNext = false;
+			$trigger_toNext.className = $trigger_toNext.className.replace( /disabled/gi, '' );
 		}
+	}
+
+	constructor( props ) {
+		
+		super( props );
 	}
 
 	render (){
@@ -123,7 +135,7 @@ export default class Register extends Component {
 	                    <div className="pull-right">
 	                        <a
 	                        	ref = "getMailCode"
-	                        	onClick = { () => this.sendMailCode( this.refs.mailInput.value ) }
+	                        	onClick = { () => this.sendMailCode() }
 	                        	className = "btn btn-primary"
 	                        	style= {{ cursor: 'pointer', verticalAlign: 'middle' }}
 	                       	>
@@ -161,7 +173,7 @@ export default class Register extends Component {
 						<a 
 							ref = "toNext"
 							className="btn btn-primary" 
-							onClick = { this.toNext } 
+							onClick = { () => this.toNext() } 
 							style = {{ float: 'right', marginRight: '15px' }} 
 						>
 							下一步

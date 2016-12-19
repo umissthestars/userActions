@@ -9,53 +9,57 @@ export default class Resettlement extends Component {
 		_event: React.PropTypes.object
 	}
 
-	constructor( props ) {
-		
-		super( props );
+	componentDidMount() {
 
 		//发送重置邮件
-		let isSendMailCode = false;
+		const $trigger_sendMail = ReactDOM.findDOMNode( this.refs.getCode );
 		this.sendMailCode = async ( account, address ) => {
 
-			if( isSendMailCode )
+			if( $trigger_sendMail.className.match( 'disabled' ) )
 				return void 0;
 			await new Promise( resolve => {
 
-				isSendMailCode = true;
+				$trigger_sendMail.className += ' disabled';
+
 				this.context._event.emit( 'send_mail.resettlement', resolve, {
 					account: account,
 					address: address
-				}, ReactDOM.findDOMNode( this.refs.getCode ) );
+				}, $trigger_sendMail );
 			} );
 
-			isSendMailCode = false;
+			$trigger_sendMail.className = $trigger_sendMail.className.replace( /disabled/gi, '' );
+
 		}
 
 		//申请重置
-		let isToReset = false;
+		const $trigger_toReset = ReactDOM.findDOMNode( this.refs.submitResettlement );
 		this.toReset = async () => {
 
-			if( isToReset )
+			if( $trigger_toReset.className.match( 'disabled' ) )
 				return void 0;
 			await new Promise( resolve => {
 
-				isToReset = true;
+				$trigger_toReset.className += ' disabled';
 				this.context._event.emit( 'to_reset.resettlement', resolve, {
 					account: this.refs.account.value, 
 					verifType: this.refs.sendInput.value,
 					verifCode: this.refs.codeInput.value,
 					pwd: this.refs.passwordInput.value
-				} );
+				}, $trigger_toReset );
 			} );
-
-			isToReset = false;
+			
+			$trigger_toReset.className = $trigger_toReset.className.replace( /disabled/gi, '' );
 		}
+	}
+
+	constructor( props ) {
+		
+		super( props );	
 	}
 
 	render() {
 		return (
 			<div className = { Resettlement } >
-
 				<div className="form-group">
 				    <label className="control-label visible-ie8 visible-ie9">账号</label>
 				    <div className="input-icon">
@@ -124,9 +128,9 @@ export default class Resettlement extends Component {
 
 			    <div className="form-group row">
 			    	<a
-			    		onClick = { this.toReset }
+			    		ref = "submitResettlement" 
+			    		onClick = { () => this.toReset() }
 			    		className = "btn btn-primary" 
-			    		ref = "submit_resettlement" 
 			    		style = {{ float: 'right', marginRight: '15px' }} 
 			    	>
 			    		重置
