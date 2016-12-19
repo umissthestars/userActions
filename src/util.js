@@ -1,13 +1,13 @@
 const addListener = ( type = 'click', target, func, bubble = false ) => {
-    
+
     const types = type.split( ',' );
     types.map( ( v, i, a ) => {
         v = v.trim();
-        if( target.addEventListener )  
-                target.addEventListener( v, func, bubble );  
+        if( target.addEventListener )
+                target.addEventListener( v, func, bubble );
         else if( target.attachEvent )
-            target.attachEvent( "on" + v, func );  
-        else target[ "on" + v ] = func;  
+            target.attachEvent( "on" + v, func );
+        else target[ "on" + v ] = func;
     } );
 }
 
@@ -16,11 +16,11 @@ const removeListener = ( type = 'click', target, func, bubble = false ) => {
     const types = type.split( ',' );
     types.map( ( v, i, a ) => {
         v = v.trim();
-        if( target.removeEventListener )  
-                target.removeEventListener( v, func, bubble );  
+        if( target.removeEventListener )
+                target.removeEventListener( v, func, bubble );
         else if( target.detachEvent )
-            target.detachEvent( "on" + v, func );  
-        else target[ "on" + v ] = null;  
+            target.detachEvent( "on" + v, func );
+        else target[ "on" + v ] = null;
     } );
 }
 
@@ -36,20 +36,20 @@ const removeListener = ( type = 'click', target, func, bubble = false ) => {
 */
 const ajax = ( { type = 'get', url, data = {}, success, error } = {} ) => {
 
-    let XMLHttpReq;  
+    let XMLHttpReq;
     type = type.toLowerCase();
 
-    try {  
-        XMLHttpReq = new ActiveXObject( "Msxml2.XMLHTTP" );//IE高版本创建XMLHTTP  
-    }  
-    catch( error ) {  
-        try {  
-            XMLHttpReq = new ActiveXObject( "Microsoft.XMLHTTP" );//IE低版本创建XMLHTTP  
-        }  
-        catch( error ) {  
-            XMLHttpReq = new XMLHttpRequest();//兼容非IE浏览器，直接创建XMLHTTP对象  
-        }  
-    }  
+    try {
+        XMLHttpReq = new ActiveXObject( "Msxml2.XMLHTTP" );//IE高版本创建XMLHTTP
+    }
+    catch( error ) {
+        try {
+            XMLHttpReq = new ActiveXObject( "Microsoft.XMLHTTP" );//IE低版本创建XMLHTTP
+        }
+        catch( error ) {
+            XMLHttpReq = new XMLHttpRequest();//兼容非IE浏览器，直接创建XMLHTTP对象
+        }
+    }
     if( type === 'get' )
         XMLHttpReq.open( type, url, true );
     else{
@@ -58,8 +58,8 @@ const ajax = ( { type = 'get', url, data = {}, success, error } = {} ) => {
         XMLHttpReq.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     }
 
-    XMLHttpReq.onreadystatechange = () => {  
-        if ( XMLHttpReq.readyState == 4 ) {  
+    XMLHttpReq.onreadystatechange = () => {
+        if ( XMLHttpReq.readyState == 4 ) {
             if ( XMLHttpReq.status == 200 ) {
 
                 success && success( XMLHttpReq.responseText, this );
@@ -67,8 +67,8 @@ const ajax = ( { type = 'get', url, data = {}, success, error } = {} ) => {
 
                 error && error( XMLHttpReq.statusText );
             }
-        }  
-    }   
+        }
+    }
     XMLHttpReq.send( type === 'get' ? null : serialize( data ) );
 
     return XMLHttpReq;
@@ -84,7 +84,7 @@ const skipOver = ( dom, interval ) => {
 
     if( interval )
         window.clearInterval( interval );
-    
+
     if( dom.nodeType !== 1 )
         return void 0;
 
@@ -99,7 +99,7 @@ const skipOver = ( dom, interval ) => {
 
         const styles = dom.getAttribute('style');
         dom.setAttribute( 'style', cssSkip[ 0 ] + ( i - 15 ) + cssSkip[ 1 ] + i + cssSkip[ 2 ] + ';' + styles );
-        
+
     }, 15);
 
     return interval;
@@ -140,7 +140,7 @@ const serialize = ( data ) => {
             if( toString.call( data[ i ] ) === '[object Array]' )
                 data[ i ].map( v => data[ i ][ v ].trim() && ( param += '&' + i + '=' + data[ i ][ v ].trim() ) );
             else
-                data[ i ].trim() && ( param += '&' + i + '=' + data[ i ].trim() );  
+                data[ i ].trim() && ( param += '&' + i + '=' + data[ i ].trim() );
 
     return param.substr( 1 );
 }
@@ -148,7 +148,7 @@ const serialize = ( data ) => {
 const codeTrigger = ( el, resetText = '获取验证码', sustainText ) => {
 
     el.setAttribute( 'disabled', '' );
-    
+
     function* interval(){
 
         let time = 60;
@@ -158,7 +158,7 @@ const codeTrigger = ( el, resetText = '获取验证码', sustainText ) => {
             else
                 yield ( time-- + 's后重新获取' );
     }
-    
+
     const _interval = interval();
     let isInterval = setInterval( () => {
 
@@ -171,7 +171,7 @@ const codeTrigger = ( el, resetText = '获取验证码', sustainText ) => {
             el.removeAttribute( 'disabled' );
             el.innerHTML = resetText;
         }
-            
+
     } , 1 * 1000 );
 }
 

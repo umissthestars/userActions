@@ -45,5 +45,11 @@ gulp.task('copy', function() {
     .pipe(gulp.dest('../../Scripts/'));
 });
 
-gulp.task('default', ['less', 'lint', 'webpack', 'copy']);
-gulp.watch(['src/**/*.*', 'src/**/**/*.*'], ['less', 'lint', 'webpack', 'copy'], function (){});
+gulp.task('copy local', function() {
+  return gulp.src('./src/style/local.css')
+    .pipe(flatten())
+    .pipe(gulp.dest('../../theme/assets/admin/pages/css/'));
+});
+
+gulp.task('default', ['less', 'lint', 'webpack', 'copy', 'copy local']);
+gulp.watch(['src/**/*.*', 'src/**/**/*.*'], ['less', 'lint', 'webpack', 'copy', 'copy local'], function (){});
