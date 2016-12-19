@@ -1,3 +1,9 @@
+#command
+-"less": "gulp less",
+-"build": "gulp",
+-"dev": "webpack",
+-"test": "node test/test.js"
+
 ##stack
 - react + es6 + event + gulp  + webpack
 
